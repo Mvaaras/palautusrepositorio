@@ -1,4 +1,10 @@
 from entities.user import User
+import re
+
+if re.match("^[a-z]+$", "kalle"):
+  print("Ok")
+else:
+  print("Virheellinen")
 
 
 class UserInputError(Exception):
@@ -36,5 +42,11 @@ class UserService:
     def validate(self, username, password):
         if not username or not password:
             raise UserInputError("Username and password are required")
+        elif len(username) < 3:
+            raise UserInputError("Username must be at least 3 characters long")
+        elif len(password) < 8:
+            raise UserInputError("Password must be at least 8 characters long")
+        elif re.match("^[a-z]+$",password):
+            raise UserInputError("Password must contain characters other than letters")
 
         # toteuta loput tarkastukset tänne ja nosta virhe virhetilanteissa
