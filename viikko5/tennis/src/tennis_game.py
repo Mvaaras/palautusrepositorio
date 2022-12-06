@@ -2,56 +2,52 @@ class TennisGame:
     def __init__(self, player1_name, player2_name):
         self.player1_name = player1_name
         self.player2_name = player2_name
-        self.m_score1 = 0
-        self.m_score2 = 0
+        self.player1_score = 0
+        self.player2_score = 0
+        self.point_names = {
+            0:"Love",
+            1:"Fifteen",
+            2:"Thirty",
+            3:"Forty"
+        }
 
     def won_point(self, player_name):
         if player_name == "player1":
-            self.m_score1 = self.m_score1 + 1
+            self.player1_score = self.player1_score + 1
         else:
-            self.m_score2 = self.m_score2 + 1
+            self.player2_score = self.player2_score + 1
 
     def get_score(self):
-        score = ""
-        temp_score = 0
-
-        if self.m_score1 == self.m_score2:
-            if self.m_score1 == 0:
-                score = "Love-All"
-            elif self.m_score1 == 1:
-                score = "Fifteen-All"
-            elif self.m_score1 == 2:
-                score = "Thirty-All"
-            elif self.m_score1 == 3:
-                score = "Forty-All"
-            else:
-                score = "Deuce"
-        elif self.m_score1 >= 4 or self.m_score2 >= 4:
-            minus_result = self.m_score1 - self. m_score2
-
-            if minus_result == 1:
-                score = "Advantage player1"
-            elif minus_result == -1:
-                score = "Advantage player2"
-            elif minus_result >= 2:
-                score = "Win for player1"
-            else:
-                score = "Win for player2"
-        else:
-            for i in range(1, 3):
-                if i == 1:
-                    temp_score = self.m_score1
-                else:
-                    score = score + "-"
-                    temp_score = self.m_score2
-
-                if temp_score == 0:
-                    score = score + "Love"
-                elif temp_score == 1:
-                    score = score + "Fifteen"
-                elif temp_score == 2:
-                    score = score + "Thirty"
-                elif temp_score == 3:
-                    score = score + "Forty"
+        score = self.define_gamestate()
 
         return score
+
+    def define_gamestate(self):
+        if self.player1_score == self.player2_score:
+            return self.name_draw()
+        elif self.player1_score >= 4 or self.player2_score >= 4:
+            return self.name_lategame()
+        else:
+            return self.name_earlygame()
+
+    def name_draw(self):
+        if self.player1_score < 4:
+            return self.name_points(self.player1_score) + "-All"
+        return "Deuce"
+
+    def name_lategame(self):
+        point_difference = self.player1_score - self. player2_score
+        if point_difference > 0:
+            return self.build_lategame_name("1",point_difference)
+        return self.build_lategame_name("2",abs(point_difference))
+
+    def name_earlygame(self):
+        return self.point_names[self.player1_score] + "-" + self.point_names[self.player2_score]
+
+    def build_lategame_name(self, player, point_difference):
+        if point_difference == 1:
+            return "Advantage player" + player
+        return "Win for player" + player
+
+    def name_points(self,points):
+        return self.point_names[points]
